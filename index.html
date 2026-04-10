@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIVRQ CAST - Gestão de Talentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cosmos-black: #0A0A0F;
+            --nebula-violet: #6B4EE6;
+            --orbit-cyan: #00D9FF;
+            --supernova-gold: #FFD700;
+            --stellar-white: #F8F9FA;
+            --gray-1: #1A1A2E;
+            --gray-2: #2D2D44;
+            --gray-3: #A0A0B0;
+            --success: #00C853;
+            --danger: #FF5252;
+            --warning: #FFAB00;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--cosmos-black);
+            color: var(--stellar-white);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--gray-1) 0%, var(--cosmos-black) 100%);
+            border-bottom: 1px solid var(--gray-2);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, var(--nebula-violet), var(--orbit-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--gray-2);
+            color: var(--gray-3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--nebula-violet);
+            color: var(--stellar-white);
+            border-color: var(--nebula-violet);
+            box-shadow: 0 0 20px rgba(107, 78, 230, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--gray-3);
+            font-size: 0.9rem;
+        }
+
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            color: var(--orbit-cyan);
+            margin-bottom: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--gray-1), var(--cosmos-black));
+            border: 1px solid var(--gray-2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--nebula-violet), var(--orbit-cyan));
+        }
+
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--orbit-cyan);
+        }
+
+        .stat-label {
+            color: var(--gray-3);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--nebula-violet), var(--orbit-cyan));
+            color: var(--stellar-white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(107, 78, 230, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--gray-2);
+            color: var(--stellar-white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), var(--orbit-cyan));
+            color: var(--cosmos-black);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--cosmos-black);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: var(--gray-1);
+            border: 1px solid var(--gray-2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            color: var(--gray-3);
+            font-weight: 500;
+        }
+
+        .filter-input, .filter-select {
+            padding: 0.75rem;
+            background: var(--cosmos-black);
+            border: 1px solid var(--gray-2);
+            border-radius: 8px;
+            color: var(--stellar-white);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--nebula-violet);
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, var(--gray-1), var(--cosmos-black));
+            border: 1px solid var(--gray-2);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--nebula-violet);
+            box-shadow: 0 20px 40px rgba(107, 78, 230, 0.2);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid var(--gray-2);
+        }
+
+        .card-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--nebula-violet);
+        }
+
+        .card-info h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-function {
+            background: rgba(107, 78, 230, 0.2);
+            color: var(--nebula-violet);
+            border: 1px solid var(--nebula-violet);
+        }
+
+        .badge-language {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--supernova-gold);
+            border: 1px solid var(--supernova-gold);
+        }
+
+        .badge-status {
+            background: rgba(0, 200, 83, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .badge-status.pending {
+            background: rgba(255, 171, 0, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-section {
+            margin-bottom: 1rem;
+        }
+
+        .card-section h4 {
+            font-size: 0.85rem;
+            color: var(--gray-3);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: var(--gray-2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .card-actions {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-2);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Job Card Specific */
+        .job-card {
+            padding: 1.5rem;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .job-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .job-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--gray-3);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .job-description {
+            color: var(--gray-3);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .job-progress {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-2);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--nebula-violet), var(--orbit-cyan));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Manager Card */
+        .manager-card {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .manager-info h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 0.25rem;
+        }
+
+        .manager-info p {
+            color: var(--gray-3);
+            font-size: 0.9rem;
+        }
+
+        /* Analytics */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .chart-card {
+            background: var(--gray-1);
+            border: 1px solid var(--gray-2);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .chart-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            color: var(--orbit-cyan);
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-label {
+            width: 120px;
+            font-size: 0.9rem;
+            color: var(--gray-3);
+        }
+
+        .chart-bar {
+            flex: 1;
+            height: 24px;
+            background: var(--cosmos-black);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 1rem;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--nebula-violet), var(--orbit-cyan));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .chart-value {
+            width: 40px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: var(--gray-1);
+            border: 1px solid var(--gray-2);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--gray-1);
+            z-index: 10;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--gray-3);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--stellar-white);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: var(--gray-3);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            background: var(--cosmos-black);
+            border: 1px solid var(--gray-2);
+            border-radius: 8px;
+            color: var(--stellar-white);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--nebula-violet);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--cosmos-black);
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--nebula-violet);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--nebula-violet);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-3);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Login Page */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--cosmos-black) 0%, var(--gray-1) 100%);
+            padding: 2rem;
+        }
+
+        .login-box {
+            background: var(--gray-1);
+            border: 1px solid var(--gray-2);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 2rem;
+        }
+
+        .login-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--gray-2);
+        }
+
+        .login-tab {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            color: var(--gray-3);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+        }
+
+        .login-tab.active {
+            color: var(--nebula-violet);
+            border-bottom-color: var(--nebula-violet);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Portal */
+        .portal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+        }
+
+        .portal-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .portal-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Profile Alert */
+        .profile-alert {
+            background: linear-gradient(135deg, rgba(107, 78, 230, 0.2), rgba(0, 217, 255, 0.2));
+            border: 1px solid var(--nebula-violet);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .profile-alert h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gray-2);
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gray-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: var(--nebula-violet);
+            box-shadow: 0 0 20px rgba(107, 78, 230, 0.5);
+        }
+
+        .step.completed .step-number {
+            background: var(--success);
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--gray-3);
+        }
+
+        .step.active .step-label {
+            color: var(--stellar-white);
+        }
+
+        /* Photo Upload */
+        .photo-upload {
+            border: 2px dashed var(--gray-2);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload:hover {
+            border-color: var(--nebula-violet);
+            background: rgba(107, 78, 230, 0.05);
+        }
+
+        .uploaded-photos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .uploaded-photo {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .uploaded-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 82, 82, 0.9);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-preview-large {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--nebula-violet);
+            margin: 0 auto 1rem;
+            display: block;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--gray-1);
+            border: 1px solid var(--gray-2);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-grid, .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <div class="login-logo">
+                <div class="logo" style="justify-content: center; font-size: 2.5rem;">
+                    <svg class="logo-icon" viewBox="0 0 40 40" style="width: 50px; height: 50px;">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6B4EE6"/>
+                                <stop offset="100%" style="stop-color:#00D9FF"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="5" y="5" width="12" height="12" rx="3" fill="none" stroke="#6B4EE6" stroke-width="1.5" transform="rotate(15 11 11)" opacity="0.4"/>
+                        <rect x="8" y="8" width="12" height="12" rx="3" fill="none" stroke="#8B6FF0" stroke-width="1.5" transform="rotate(30 14 14)" opacity="0.7"/>
+                        <rect x="11" y="11" width="12" height="12" rx="3" fill="url(#logoGrad)" transform="rotate(45 17 17)"/>
+                        <circle cx="17" cy="17" r="2" fill="#FFD700"/>
+                    </svg>
+                    UNIV<span>RQ</span> CAST
+                </div>
+                <p style="color: var(--gray-3); margin-top: 0.5rem;">Portal do Profissional</p>
+            </div>
+
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="showLoginTab('login')">Entrar</button>
+                <button class="login-tab" onclick="showLoginTab('register')">Cadastrar</button>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+                    Entrar no Sistema
+                </button>
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+                    <a href="#" onclick="showAdminLogin()" style="color: var(--nebula-violet);">Acesso Administrativo →</a>
+                </p>
+            </form>
+
+            <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" name="name" required placeholder="Seu nome completo">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="tel" name="phone" required placeholder="(11) 99999-9999">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" name="password" required placeholder="Mínimo 6 caracteres" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Senha</label>
+                    <input type="password" name="confirmPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%; justify-content: center; margin-top: 1rem;">
+                    Criar Cadastro
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 style="font-family: 'Space Grotesk', sans-serif; color: var(--nebula-violet);">Acesso Administrativo</h2>
+                <button class="modal-close" onclick="closeAdminLogin()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleAdminLogin(event)">
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" name="username" required value="admin">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" name="password" required value="univrq2026">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        Acessar Painel Admin
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN INTERFACE -->
+    <div id="adminInterface" class="hidden">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo" onclick="showAdminTab('talents')">
+                    <svg class="logo-icon" viewBox="0 0 40 40">
+                        <defs>
+                            <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6B4EE6"/>
+                                <stop offset="100%" style="stop-color:#00D9FF"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="5" y="5" width="12" height="12" rx="3" fill="none" stroke="#6B4EE6" stroke-width="1.5" transform="rotate(15 11 11)" opacity="0.4"/>
+                        <rect x="8" y="8" width="12" height="12" rx="3" fill="none" stroke="#8B6FF0" stroke-width="1.5" transform="rotate(30 14 14)" opacity="0.7"/>
+                        <rect x="11" y="11" width="12" height="12" rx="3" fill="url(#logoGrad2)" transform="rotate(45 17 17)"/>
+                        <circle cx="17" cy="17" r="2" fill="#FFD700"/>
+                    </svg>
+                    UNIV<span>RQ</span> CAST
+                </div>
+                <nav class="nav-tabs">
+                    <button class="nav-tab active" onclick="showAdminTab('talents')" id="tab-talents">Banco de Talentos</button>
+                    <button class="nav-tab" onclick="showAdminTab('jobs')" id="tab-jobs">Vagas Ativas</button>
+                    <button class="nav-tab" onclick="showAdminTab('managers')" id="tab-managers">Gestores</button>
+                    <button class="nav-tab" onclick="showAdminTab('analytics')" id="tab-analytics">Analytics</button>
+                </nav>
+                <div class="user-info">
+                    <span>Administrador</span>
+                    <button class="btn-logout" onclick="logout()">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-container" id="adminContent">
+            <!-- Content loaded by JavaScript -->
+        </main>
+    </div>
+
+    <!-- PROFESSIONAL PORTAL -->
+    <div id="professionalPortal" class="hidden">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 40 40">
+                        <defs>
+                            <linearGradient id="logoGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6B4EE6"/>
+                                <stop offset="100%" style="stop-color:#00D9FF"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="5" y="5" width="12" height="12" rx="3" fill="none" stroke="#6B4EE6" stroke-width="1.5" transform="rotate(15 11 11)" opacity="0.4"/>
+                        <rect x="8" y="8" width="12" height="12" rx="3" fill="none" stroke="#8B6FF0" stroke-width="1.5" transform="rotate(30 14 14)" opacity="0.7"/>
+                        <rect x="11" y="11" width="12" height="12" rx="3" fill="url(#logoGrad3)" transform="rotate(45 17 17)"/>
+                        <circle cx="17" cy="17" r="2" fill="#FFD700"/>
+                    </svg>
+                    UNIV<span>RQ</span> CAST
+                </div>
+                <div class="user-info">
+                    <span id="portalUserName">Profissional</span>
+                    <button class="btn-logout" onclick="logout()">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="portal-container" id="portalContent">
+            <!-- Content loaded by JavaScript -->
+        </div>
+    </div>
+
+    <!-- PROFILE COMPLETION MODAL -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-family: 'Space Grotesk', sans-serif; color: var(--nebula-violet);">
+                    Completar Cadastro - <span id="profileStepTitle">Dados Pessoais</span>
+                </h2>
+                <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Pessoal</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Profissional</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Habilidades</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Fotos</div>
+                    </div>
+                </div>
+
+                <!-- Step 1 -->
+                <div id="step1" class="profile-step">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome Completo *</label>
+                            <input type="text" id="profName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Idade *</label>
+                            <input type="number" id="profAge" min="18" max="80" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone *</label>
+                            <input type="tel" id="profPhone" required placeholder="(11) 99999-9999">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="profEmail" required readonly style="opacity: 0.6;">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Endereço Completo *</label>
+                            <input type="text" id="profAddress" required placeholder="Rua, número, bairro">
+                        </div>
+                        <div class="form-group">
+                            <label>Estado *</label>
+                            <select id="profState" required>
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cidade *</label>
+                            <input type="text" id="profCity" required placeholder="Sua cidade">
+                        </div>
+                        <div class="form-group">
+                            <label>CNH *</label>
+                            <select id="profCNH" required>
+                                <option value="Não possui">Não possui</option>
+                                <option value="A">A - Motos</option>
+                                <option value="B">B - Carros</option>
+                                <option value="C">C - Veículos de Carga</option>
+                                <option value="D">D - Ônibus</option>
+                                <option value="E">E - Carretas</option>
+                                <option value="AB">A+B</option>
+                                <option value="AC">A+C</option>
+                                <option value="AD">A+D</option>
+                                <option value="AE">A+E</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div id="step2" class="profile-step hidden">
+                    <div class="form-group full-width" style="margin-bottom: 1.5rem;">
+                        <label>Funções que pode exercer *</label>
+                        <div class="checkbox-group" id="functionsGrid"></div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Experiência em Eventos *</label>
+                        <textarea id="profExperience" rows="4" required placeholder="Descreva sua experiência..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div id="step3" class="profile-step hidden">
+                    <div class="form-group full-width" style="margin-bottom: 1.5rem;">
+                        <label>Habilidades</label>
+                        <div class="checkbox-group" id="skillsGrid"></div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Idiomas</label>
+                        <div id="profLanguagesContainer" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="addProfLanguage()" style="margin-top: 0.5rem;">+ Adicionar Idioma</button>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div id="step4" class="profile-step hidden">
+                    <div class="form-group full-width" style="text-align: center;">
+                        <label>Foto de Perfil *</label>
+                        <div id="profProfilePreview" style="margin-bottom: 1rem;">
+                            <div style="width: 150px; height: 150px; border-radius: 50%; background: var(--gray-2); margin: 0 auto; display: flex; align-items: center; justify-content: center; color: var(--gray-3); font-size: 3rem;">📷</div>
+                        </div>
+                        <div class="photo-upload" onclick="document.getElementById('profProfileInput').click()" style="max-width: 300px; margin: 0 auto;">
+                            <p style="color: var(--gray-3);">Clique para adicionar foto de perfil</p>
+                            <input type="file" id="profProfileInput" accept="image/*" style="display: none;" onchange="handleProfProfilePhoto(this)">
+                        </div>
+                    </div>
+                    <div class="form-group full-width" style="margin-top: 2rem;">
+                        <label>Fotos de Jobs (máx. 6)</label>
+                        <div class="photo-upload" onclick="document.getElementById('profJobsInput').click()">
+                            <p style="color: var(--gray-3);">📸 Clique para adicionar fotos</p>
+                            <input type="file" id="profJobsInput" accept="image/*" multiple style="display: none;" onchange="handleProfJobsPhotos(this)">
+                        </div>
+                        <div id="profJobsPreview" class="uploaded-photos"></div>
+                    </div>
+                    <div class="form-group full-width" style="margin-top: 1.5rem;">
+                        <label>Observações</label>
+                        <textarea id="profNotes" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; justify-content: space-between;">
+                    <button type="button" class="btn btn-secondary" id="prevStepBtn" onclick="prevStep()" style="visibility: hidden;">← Anterior</button>
+                    <button type="button" class="btn btn-primary" id="nextStepBtn" onclick="nextStep()">Próximo →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS FOR ADMIN FORMS -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-family: 'Space Grotesk', sans-serif; color: var(--nebula-violet);" id="adminModalTitle">Cadastrar</h2>
+                <button class="modal-close" onclick="closeAdminModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="adminModalBody"></div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast">
+        <span id="toastIcon">✓</span>
+        <span id="toastMessage">Operação realizada com sucesso!</span>
+    </div>
+
+    <script>
+        // ==================== DATA STORE ====================
+        let talents = JSON.parse(localStorage.getItem('univrq_talents')) || [];
+        let jobs = JSON.parse(localStorage.getItem('univrq_jobs')) || [];
+        let managers = JSON.parse(localStorage.getItem('univrq_managers')) || [];
+        let applications = JSON.parse(localStorage.getItem('univrq_applications')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('univrq_currentUser')) || null;
+        let currentPhotos = { profile: null, jobs: [] };
+        let currentStep = 1;
+        let currentAdminTab = 'talents';
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeData();
+            populateStates();
+            populateCheckboxes();
+            checkAuth();
+        });
+
+        function initializeData() {
+            if (talents.length === 0 && managers.length === 0) {
+                // Sample Managers
+                managers = [
+                    {
+                        id: 1,
+                        name: "Fernanda Oliveira",
+                        email: "fernanda@univrq.com",
+                        phone: "(11) 98765-1234",
+                        role: "Coordenadora de Eventos",
+                        department: "Operações",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: "Ricardo Santos",
+                        email: "ricardo@univrq.com",
+                        phone: "(11) 91234-5678",
+                        role: "Gerente de Casting",
+                        department: "Recursos Humanos",
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+
+                // Sample Jobs
+                jobs = [
+                    {
+                        id: 1,
+                        title: "Promotores - Lançamento Bebida",
+                        client: "PowerDrink Brasil",
+                        location: "São Paulo - Shopping Morumbi",
+                        date: "2026-04-20",
+                        time: "10:00 - 18:00",
+                        functions: ["Promotor", "Degustador"],
+                        requiredSkills: ["Comunicação"],
+                        payment: "R$ 250,00/dia",
+                        description: "Ação de sampling para lançamento de nova bebida energética.",
+                        managerId: 1,
+                        status: "active",
+                        maxPositions: 6,
+                        filledPositions: 2,
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        title: "Recepcionistas - Evento Corporativo",
+                        client: "Tech Summit 2026",
+                        location: "São Paulo - Expo Center Norte",
+                        date: "2026-04-25",
+                        time: "08:00 - 18:00",
+                        functions: ["Recepcionista"],
+                        requiredSkills: ["Inglês"],
+                        payment: "R$ 350,00/dia",
+                        description: "Evento internacional. Inglês avançado obrigatório.",
+                        managerId: 2,
+                        status: "active",
+                        maxPositions: 4,
+                        filledPositions: 1,
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+
+                saveAllData();
+            }
+        }
+
+        function populateStates() {
+            const states = [
+                { uf: 'AC', name: 'Acre' }, { uf: 'AL', name: 'Alagoas' }, { uf: 'AP', name: 'Amapá' },
+                { uf: 'AM', name: 'Amazonas' }, { uf: 'BA', name: 'Bahia' }, { uf: 'CE', name: 'Ceará' },
+                { uf: 'DF', name: 'Distrito Federal' }, { uf: 'ES', name: 'Espírito Santo' }, { uf: 'GO', name: 'Goiás' },
+                { uf: 'MA', name: 'Maranhão' }, { uf: 'MT', name: 'Mato Grosso' }, { uf: 'MS', name: 'Mato Grosso do Sul' },
+                { uf: 'MG', name: 'Minas Gerais' }, { uf: 'PA', name: 'Pará' }, { uf: 'PB', name: 'Paraíba' },
+                { uf: 'PR', name: 'Paraná' }, { uf: 'PE', name: 'Pernambuco' }, { uf: 'PI', name: 'Piauí' },
+                { uf: 'RJ', name: 'Rio de Janeiro' }, { uf: 'RN', name: 'Rio Grande do Norte' }, { uf: 'RS', name: 'Rio Grande do Sul' },
+                { uf: 'RO', name: 'Rondônia' }, { uf: 'RR', name: 'Roraima' }, { uf: 'SC', name: 'Santa Catarina' },
+                { uf: 'SP', name: 'São Paulo' }, { uf: 'SE', name: 'Sergipe' }, { uf: 'TO', name: 'Tocantins' }
+            ];
+            
+            const select = document.getElementById('profState');
+            if (select) {
+                states.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.uf;
+                    option.textContent = s.name;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        function populateCheckboxes() {
+            const functions = ['Promotor', 'Recepcionista', 'Produtor', 'Supervisor', 'Degustador', 'Modelo', 'Montador', 'Motorista', 'Manobrista', 'Coordenador', 'Segurança', 'Fotógrafo'];
+            const skills = ['Comunicação', 'Liderança', 'Trabalho em equipe', 'Proatividade', 'Criatividade', 'Organização', 'Tecnologia', 'Atendimento ao público', 'Vendas', 'Marketing'];
+            
+            const funcGrid = document.getElementById('functionsGrid');
+            const skillsGrid = document.getElementById('skillsGrid');
+            
+            if (funcGrid) {
+                funcGrid.innerHTML = functions.map(f => `
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="${f}">
+                        <span>${f}</span>
+                    </label>
+                `).join('');
+            }
+            
+            if (skillsGrid) {
+                skillsGrid.innerHTML = skills.map(s => `
+                    <label class="checkbox-item">
+                        <input type="checkbox" value="${s}">
+                        <span>${s}</span>
+                    </label>
+                `).join('');
+            }
+        }
+
+        // ==================== AUTHENTICATION ====================
+        function checkAuth() {
+            currentUser = JSON.parse(localStorage.getItem('univrq_currentUser'));
+            
+            if (!currentUser) {
+                showLoginPage();
+            } else if (currentUser.type === 'admin') {
+                showAdminInterface();
+            } else {
+                showProfessionalPortal();
+            }
+        }
+
+        function showLoginPage() {
+            hideAllInterfaces();
+            document.getElementById('loginPage').classList.remove('hidden');
+        }
+
+        function showAdminInterface() {
+            hideAllInterfaces();
+            document.getElementById('adminInterface').classList.remove('hidden');
+            showAdminTab('talents');
+        }
+
+        function showProfessionalPortal() {
+            hideAllInterfaces();
+            document.getElementById('professionalPortal').classList.remove('hidden');
+            document.getElementById('portalUserName').textContent = currentUser.name;
+            renderPortal();
+        }
+
+        function hideAllInterfaces() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('adminInterface').classList.add('hidden');
+            document.getElementById('professionalPortal').classList.add('hidden');
+        }
+
+        function showLoginTab(tab) {
+            document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+
+            const user = talents.find(t => t.email === email && t.password === password && t.type === 'professional');
+            
+            if (user) {
+                currentUser = { ...user, type: 'professional' };
+                localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
+                showToast('Login realizado com sucesso!', 'success');
+                showProfessionalPortal();
+            } else {
+                showToast('Email ou senha incorretos', 'error');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            if (formData.get('password') !== formData.get('confirmPassword')) {
+                showToast('As senhas não conferem', 'error');
+                return;
+            }
+
+            if (talents.some(t => t.email === formData.get('email'))) {
+                showToast('Este email já está cadastrado', 'error');
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                password: formData.get('password'),
+                type: 'professional',
+                status: 'pending',
+                profileComplete: false,
+                age: null,
+                address: '',
+                city: '',
+                state: '',
+                cnh: 'Não possui',
+                functions: [],
+                skills: [],
+                languages: [],
+                experience: '',
+                photos: { profile: null, jobs: [] },
+                notes: '',
+                createdAt: new Date().toISOString()
+            };
+
+            talents.push(newUser);
+            saveAllData();
+            
+            currentUser = { ...newUser, type: 'professional' };
+            localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
+            
+            showToast('Cadastro realizado! Complete seu perfil.', 'success');
+            
+            setTimeout(() => {
+                showProfessionalPortal();
+                openProfileModal();
+            }, 1000);
+        }
+
+        function showAdminLogin() {
+            document.getElementById('adminLoginModal').classList.add('active');
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('adminLoginModal').classList.remove('active');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const username = e.target.username.value;
+            const password = e.target.password.value;
+
+            if (username === 'admin' && password === 'univrq2026') {
+                currentUser = { name: 'Administrador', type: 'admin', email: 'admin@univrq.com' };
+                localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
+                closeAdminLogin();
+                showToast('Bem-vindo, Administrador!', 'success');
+                showAdminInterface();
+            } else {
+                showToast('Credenciais inválidas', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('univrq_currentUser');
+            showLoginPage();
+        }
+
+        // ==================== ADMIN TABS ====================
+        function showAdminTab(tab) {
+            currentAdminTab = tab;
+            
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            // Load content
+            const container = document.getElementById('adminContent');
+            
+            switch(tab) {
+                case 'talents':
+                    renderTalentsTab(container);
+                    break;
+                case 'jobs':
+                    renderJobsTab(container);
+                    break;
+                case 'managers':
+                    renderManagersTab(container);
+                    break;
+                case 'analytics':
+                    renderAnalyticsTab(container);
+                    break;
+            }
+        }
+
+        function renderTalentsTab(container) {
+            const professionals = talents.filter(t => t.type === 'professional');
+            
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">${professionals.length}</div>
+                        <div class="stat-label">Profissionais Cadastrados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${new Set(professionals.flatMap(t => t.functions || [])).size}</div>
+                        <div class="stat-label">Funções Diferentes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${new Set(professionals.map(t => t.state).filter(Boolean)).size}</div>
+                        <div class="stat-label">Estados Atendidos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${professionals.filter(t => t.languages?.length > 0).length}</div>
+                        <div class="stat-label">Profissionais Bilíngues</div>
+                    </div>
+                </div>
+
+                <div class="filters-section">
+                    <div class="filters-header">
+                        <h2 style="font-family: 'Space Grotesk', sans-serif; color: var(--orbit-cyan);">Banco de Talentos</h2>
+                        <button class="btn btn-success" onclick="openAdminTalentModal()">
+                            <span>+</span> Novo Profissional
+                        </button>
+                    </div>
+                    
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Buscar por nome</label>
+                            <input type="text" class="filter-input" id="searchTalent" placeholder="Digite o nome..." onkeyup="filterTalents()">
+                        </div>
+                        <div class="filter-group">
+                            <label>Função</label>
+                            <select class="filter-select" id="filterFunction" onchange="filterTalents()">
+                                <option value="">Todas</option>
+                                ${['Promotor', 'Recepcionista', 'Produtor', 'Supervisor', 'Degustador', 'Modelo', 'Montador', 'Motorista', 'Manobrista', 'Coordenador'].map(f => `<option value="${f}">${f}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Estado</label>
+                            <select class="filter-select" id="filterState" onchange="filterTalents()">
+                                <option value="">Todos</option>
+                                ${getStatesOptions()}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="talentsList" class="cards-grid">
+                    ${renderTalentsList(professionals)}
+                </div>
+            `;
+        }
+
+        function renderJobsTab(container) {
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 class="page-title">Vagas Ativas</h1>
+                    <button class="btn btn-success" onclick="openJobModal()">
+                        <span>+</span> Nova Vaga
+                    </button>
+                </div>
+
+                <div class="cards-grid" id="jobsList">
+                    ${renderJobsList(jobs)}
+                </div>
+            `;
+        }
+
+        function renderManagersTab(container) {
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 class="page-title">Gestores</h1>
+                    <button class="btn btn-success" onclick="openManagerModal()">
+                        <span>+</span> Novo Gestor
+                    </button>
+                </div>
+
+                <div class="cards-grid" id="managersList">
+                    ${renderManagersList(managers)}
+                </div>
+            `;
+        }
+
+        function renderAnalyticsTab(container) {
+            const professionals = talents.filter(t => t.type === 'professional');
+            
+            // Calculate stats
+            const functionsCount = {};
+            professionals.forEach(t => {
+                (t.functions || []).forEach(f => {
+                    functionsCount[f] = (functionsCount[f] || 0) + 1;
+                });
+            });
+            
+            const sortedFunctions = Object.entries(functionsCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            const totalApps = applications.length;
+            const approvedApps = applications.filter(a => a.status === 'approved').length;
+            const pendingApps = applications.filter(a => a.status === 'pending').length;
+            
+            container.innerHTML = `
+                <h1 class="page-title">Analytics</h1>
+                
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-number">${professionals.length}</div>
+                        <div class="stat-label">Total Profissionais</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${jobs.length}</div>
+                        <div class="stat-label">Vagas Criadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${totalApps}</div>
+                        <div class="stat-label">Total Candidaturas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${approvedApps}</div>
+                        <div class="stat-label">Contratações</div>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="chart-card">
+                        <h3 class="chart-title">Top Funções</h3>
+                        ${sortedFunctions.length > 0 ? sortedFunctions.map(([func, count]) => `
+                            <div class="chart-row">
+                                <div class="chart-label">${func}</div>
+                                <div class="chart-bar">
+                                    <div class="chart-fill" style="width: ${professionals.length ? (count/professionals.length)*100 : 0}%">${count}</div>
+                                </div>
+                                <div class="chart-value">${count}</div>
+                            </div>
+                        `).join('') : '<p style="color: var(--gray-3);">Sem dados</p>'}
+                    </div>
+
+                    <div class="chart-card">
+                        <h3 class="chart-title">Candidaturas</h3>
+                        <div style="height: 200px; display: flex; align-items: flex-end; justify-content: space-around; padding-top: 2rem;">
+                            <div style="text-align: center;">
+                                <div style="width: 60px; background: var(--warning); border-radius: 4px 4px 0 0; height: ${totalApps ? (pendingApps/totalApps)*150 : 10}px; min-height: 10px; display: flex; align-items: flex-end; justify-content: center; color: black; font-weight: 600; padding-bottom: 0.5rem;">${pendingApps}</div>
+                                <div style="margin-top: 0.5rem; color: var(--gray-3); font-size: 0.85rem;">Pendentes</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="width: 60px; background: var(--success); border-radius: 4px 4px 0 0; height: ${totalApps ? (approvedApps/totalApps)*150 : 10}px; min-height: 10px; display: flex; align-items: flex-end; justify-content: center; color: black; font-weight: 600; padding-bottom: 0.5rem;">${approvedApps}</div>
+                                <div style="margin-top: 0.5rem; color: var(--gray-3); font-size: 0.85rem;">Aprovadas</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="width: 60px; background: var(--danger); border-radius: 4px 4px 0 0; height: ${totalApps ? ((totalApps-approvedApps-pendingApps)/totalApps)*150 : 10}px; min-height: 10px; display: flex; align-items: flex-end; justify-content: center; color: white; font-weight: 600; padding-bottom: 0.5rem;">${totalApps-approvedApps-pendingApps}</div>
+                                <div style="margin-top: 0.5rem; color: var(--gray-3); font-size: 0.85rem;">Rejeitadas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== RENDER LIST FUNCTIONS ====================
+        function renderTalentsList(list) {
+            if (list.length === 0) {
+                return `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon">👥</div>
+                        <h3>Nenhum profissional encontrado</h3>
+                    </div>
+                `;
+            }
+            
+            return list.map((t, i) => `
+                <div class="card" style="animation-delay: ${i * 0.05}s">
+                    <div class="card-header">
+                        <img src="${t.photos?.profile || 'https://via.placeholder.com/80/6B4EE6/FFFFFF?text=' + t.name.charAt(0)}" class="card-avatar" alt="${t.name}">
+                        <div class="card-info">
+                            <h3>${t.name}</h3>
+                            <p style="color: var(--gray-3); font-size: 0.9rem;">${t.age || '--'} anos • ${t.state || 'N/A'}</p>
+                            <div class="card-meta">
+                                ${(t.functions || []).slice(0, 2).map(f => `<span class="badge badge-function">${f}</span>`).join('')}
+                                ${(t.functions || []).length > 2 ? `<span class="badge badge-function">+${t.functions.length - 2}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-section">
+                            <h4>Contato</h4>
+                            <p style="font-size: 0.9rem;">${t.phone}</p>
+                            <p style="font-size: 0.85rem; color: var(--gray-3);">${t.email}</p>
+                        </div>
+                        ${t.languages?.length > 0 ? `
+                        <div class="card-section">
+                            <h4>Idiomas</h4>
+                            <div class="card-meta">
+                                ${t.languages.map(l => `<span class="badge badge-language">${l.language}</span>`).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                        ${t.cnh !== 'Não possui' ? `<span class="badge" style="background: rgba(0,200,83,0.2); color: var(--success);">🚗 CNH ${t.cnh}</span>` : ''}
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-small" onclick="viewTalentDetails(${t.id})">Ver</button>
+                        <button class="btn btn-secondary btn-small" onclick="editTalentAdmin(${t.id})">Editar</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteTalentAdmin(${t.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderJobsList(list) {
+            if (list.length === 0) {
+                return `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon">📋</div>
+                        <h3>Nenhuma vaga cadastrada</h3>
+                    </div>
+                `;
+            }
+            
+            return list.map((job, i) => {
+                const manager = managers.find(m => m.id === job.managerId);
+                const progress = (job.filledPositions / job.maxPositions) * 100;
+                
+                return `
+                <div class="card job-card" style="animation-delay: ${i * 0.05}s">
+                    <div class="job-header">
+                        <div>
+                            <span class="badge ${job.status === 'active' ? 'badge-status' : 'badge-status pending'}">
+                                ${job.status === 'active' ? 'Ativa' : job.status === 'filled' ? 'Preenchida' : 'Encerrada'}
+                            </span>
+                            <h3 class="job-title" style="margin-top: 0.5rem;">${job.title}</h3>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="color: var(--supernova-gold); font-weight: 600;">${job.payment}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="job-meta">
+                        <span>📍 ${job.location}</span>
+                        <span>📅 ${formatDate(job.date)}</span>
+                        <span>👤 ${manager ? manager.name : 'Sem gestor'}</span>
+                    </div>
+                    
+                    <p class="job-description">${job.description}</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <span style="font-size: 0.85rem; color: var(--gray-3);">Funções: </span>
+                        ${job.functions.map(f => `<span class="badge badge-function">${f}</span>`).join('')}
+                    </div>
+                    
+                    <div class="job-progress">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                            <span style="color: var(--gray-3);">Preenchimento</span>
+                            <span style="color: var(--stellar-white); font-weight: 600;">${job.filledPositions} / ${job.maxPositions}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions" style="margin-top: 1rem;">
+                        <button class="btn btn-primary btn-small" onclick="viewJobApplications(${job.id})">Candidatos</button>
+                        <button class="btn btn-secondary btn-small" onclick="editJob(${job.id})">Editar</button>
+                        <button class="btn btn-danger btn-small" onclick="closeJob(${job.id})">Encerrar</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function renderManagersList(list) {
+            if (list.length === 0) {
+                return `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon">👔</div>
+                        <h3>Nenhum gestor cadastrado</h3>
+                    </div>
+                `;
+            }
+            
+            return list.map((m, i) => `
+                <div class="card manager-card" style="animation-delay: ${i * 0.05}s">
+                    <div class="manager-info">
+                        <h3>${m.name}</h3>
+                        <p>${m.role} • ${m.department}</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.25rem;">${m.email} | ${m.phone}</p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary btn-small" onclick="editManager(${m.id})">Editar</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteManager(${m.id})">Remover</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== FILTER FUNCTIONS ====================
+        function filterTalents() {
+            const search = document.getElementById('searchTalent')?.value.toLowerCase() || '';
+            const func = document.getElementById('filterFunction')?.value || '';
+            const state = document.getElementById('filterState')?.value || '';
+            
+            let filtered = talents.filter(t => {
+                if (t.type !== 'professional') return false;
+                if (search && !t.name.toLowerCase().includes(search)) return false;
+                if (func && !(t.functions || []).includes(func)) return false;
+                if (state && t.state !== state) return false;
+                return true;
+            });
+            
+            document.getElementById('talentsList').innerHTML = renderTalentsList(filtered);
+        }
+
+        // ==================== MODAL FUNCTIONS ====================
+        function openAdminTalentModal() {
+            document.getElementById('adminModalTitle').textContent = 'Novo Profissional';
+            document.getElementById('adminModalBody').innerHTML = getTalentFormHTML();
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function openJobModal() {
+            document.getElementById('adminModalTitle').textContent = 'Nova Vaga';
+            document.getElementById('adminModalBody').innerHTML = getJobFormHTML();
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function openManagerModal() {
+            document.getElementById('adminModalTitle').textContent = 'Novo Gestor';
+            document.getElementById('adminModalBody').innerHTML = getManagerFormHTML();
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        function getTalentFormHTML() {
+            return `
+                <form onsubmit="saveAdminTalent(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome *</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Idade *</label>
+                            <input type="number" name="age" min="18" max="80" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone *</label>
+                            <input type="tel" name="phone" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Endereço</label>
+                            <input type="text" name="address">
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select name="state">
+                                <option value="">Selecione...</option>
+                                ${getStatesOptions()}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cidade</label>
+                            <input type="text" name="city">
+                        </div>
+                        <div class="form-group">
+                            <label>CNH</label>
+                            <select name="cnh">
+                                <option value="Não possui">Não possui</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="AB">A+B</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Funções</label>
+                            <div class="checkbox-group">
+                                ${['Promotor', 'Recepcionista', 'Produtor', 'Supervisor', 'Degustador', 'Modelo', 'Montador', 'Motorista', 'Manobrista', 'Coordenador'].map(f => `
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="functions" value="${f}">
+                                        <span>${f}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            `;
+        }
+
+        function getJobFormHTML() {
+            return `
+                <form onsubmit="saveJob(event)">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Título *</label>
+                            <input type="text" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cliente *</label>
+                            <input type="text" name="client" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gestor *</label>
+                            <select name="managerId" required>
+                                <option value="">Selecione...</option>
+                                ${managers.map(m => `<option value="${m.id}">${m.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Local *</label>
+                            <input type="text" name="location" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data *</label>
+                            <input type="date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Horário *</label>
+                            <input type="text" name="time" placeholder="10:00 - 18:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Remuneração *</label>
+                            <input type="text" name="payment" placeholder="R$ 250,00/dia" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Vagas *</label>
+                            <input type="number" name="maxPositions" min="1" value="1" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Funções Necessárias *</label>
+                            <div class="checkbox-group">
+                                ${['Promotor', 'Recepcionista', 'Produtor', 'Supervisor', 'Degustador', 'Modelo', 'Montador', 'Motorista', 'Manobrista', 'Coordenador'].map(f => `
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="functions" value="${f}">
+                                        <span>${f}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Descrição *</label>
+                            <textarea name="description" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Criar Vaga</button>
+                    </div>
+                </form>
+            `;
+        }
+
+        function getManagerFormHTML() {
+            return `
+                <form onsubmit="saveManager(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome *</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone *</label>
+                            <input type="tel" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cargo *</label>
+                            <input type="text" name="role" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Departamento *</label>
+                            <select name="department" required>
+                                <option value="">Selecione...</option>
+                                <option value="Operações">Operações</option>
+                                <option value="Recursos Humanos">Recursos Humanos</option>
+                                <option value="Comercial">Comercial</option>
+                                <option value="Marketing">Marketing</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            `;
+        }
+
+        // ==================== SAVE FUNCTIONS ====================
+        function saveAdminTalent(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const newTalent = {
+                id: Date.now(),
+                name: formData.get('name'),
+                email: formData.get('email'),
+                age: parseInt(formData.get('age')),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                city: formData.get('city'),
+                state: formData.get('state'),
+                cnh: formData.get('cnh'),
+                functions: Array.from(e.target.querySelectorAll('input[name="functions"]:checked')).map(cb => cb.value),
+                type: 'professional',
+                status: 'active',
+                profileComplete: true,
+                skills: [],
+                languages: [],
+                experience: '',
+                photos: { profile: null, jobs: [] },
+                createdAt: new Date().toISOString()
+            };
+
+            talents.push(newTalent);
+            saveAllData();
+            closeAdminModal();
+            showToast('Profissional cadastrado!', 'success');
+            showAdminTab('talents');
+        }
+
+        function saveJob(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const newJob = {
+                id: Date.now(),
+                title: formData.get('title'),
+                client: formData.get('client'),
+                managerId: parseInt(formData.get('managerId')),
+                location: formData.get('location'),
+                date: formData.get('date'),
+                time: formData.get('time'),
+                payment: formData.get('payment'),
+                maxPositions: parseInt(formData.get('maxPositions')),
+                filledPositions: 0,
+                functions: Array.from(e.target.querySelectorAll('input[name="functions"]:checked')).map(cb => cb.value),
+                description: formData.get('description'),
+                status: 'active',
+                requiredSkills: [],
+                requiredLanguages: [],
+                createdAt: new Date().toISOString()
+            };
+
+            jobs.push(newJob);
+            saveAllData();
+            closeAdminModal();
+            showToast('Vaga criada!', 'success');
+            showAdminTab('jobs');
+        }
+
+        function saveManager(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const newManager = {
+                id: Date.now(),
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                role: formData.get('role'),
+                department: formData.get('department'),
+                createdAt: new Date().toISOString()
+            };
+
+            managers.push(newManager);
+            saveAllData();
+            closeAdminModal();
+            showToast('Gestor cadastrado!', 'success');
+            showAdminTab('managers');
+        }
+
+        // ==================== ACTION FUNCTIONS ====================
+        function viewTalentDetails(id) {
+            const t = talents.find(x => x.id === id);
+            if (!t) return;
+            
+            alert(`
+PERFIL: ${t.name}
+
+📋 DADOS
+Nome: ${t.name}
+Idade: ${t.age || '--'} anos
+Telefone: ${t.phone}
+Email: ${t.email}
+Cidade: ${t.city || 'N/A'} - ${t.state || 'N/A'}
+
+🚗 CNH: ${t.cnh || 'Não possui'}
+
+💼 FUNÇÕES: ${(t.functions || []).join(', ') || 'Nenhuma'}
+
+⭐ HABILIDADES: ${(t.skills || []).join(', ') || 'Nenhuma'}
+
+🌐 IDIOMAS:
+${(t.languages || []).map(l => `  • ${l.language}: ${l.level}`).join('\n') || '  Nenhum'}
+
+📝 EXPERIÊNCIA:
+${t.experience || 'Não informada'}
+            `);
+        }
+
+        function editTalentAdmin(id) {
+            showToast('Função de edição em desenvolvimento', 'success');
+        }
+
+        function deleteTalentAdmin(id) {
+            if (!confirm('Excluir este profissional?')) return;
+            talents = talents.filter(t => t.id !== id);
+            saveAllData();
+            showToast('Profissional removido', 'success');
+            showAdminTab('talents');
+        }
+
+        function viewJobApplications(jobId) {
+            const job = jobs.find(j => j.id === jobId);
+            const jobApps = applications.filter(a => a.jobId === jobId);
+            
+            if (jobApps.length === 0) {
+                alert(`Nenhuma candidatura para "${job.title}"`);
+                return;
+            }
+            
+            let msg = `CANDIDATOS - ${job.title}\n\n`;
+            jobApps.forEach((app, i) => {
+                const prof = talents.find(t => t.id === app.talentId);
+                msg += `${i+1}. ${prof?.name || 'Desconhecido'}\n`;
+                msg += `   Status: ${app.status}\n`;
+                msg += `   Data: ${formatDate(app.appliedAt)}\n\n`;
+            });
+            
+            alert(msg);
+        }
+
+        function editJob(id) {
+            showToast('Função de edição em desenvolvimento', 'success');
+        }
+
+        function closeJob(id) {
+            if (!confirm('Encerrar esta vaga?')) return;
+            const job = jobs.find(j => j.id === id);
+            if (job) {
+                job.status = 'closed';
+                saveAllData();
+                showToast('Vaga encerrada', 'success');
+                showAdminTab('jobs');
+            }
+        }
+
+        function editManager(id) {
+            showToast('Função de edição em desenvolvimento', 'success');
+        }
+
+        function deleteManager(id) {
+            if (!confirm('Remover este gestor?')) return;
+            managers = managers.filter(m => m.id !== id);
+            saveAllData();
+            showToast('Gestor removido', 'success');
+            showAdminTab('managers');
+        }
+
+        // ==================== PROFESSIONAL PORTAL ====================
+        function renderPortal() {
+            const container = document.getElementById('portalContent');
+            const userApps = applications.filter(a => a.talentId === currentUser.id);
+            const isComplete = currentUser.profileComplete;
+            
+            let html = '';
+            
+            if (!isComplete) {
+                html += `
+                    <div class="profile-alert">
+                        <h3>🎯 Complete seu cadastro para ver vagas!</h3>
+                        <p style="margin: 1rem 0;">Precisamos de mais informações para encontrar as melhores oportunidades para você.</p>
+                        <button class="btn btn-primary" onclick="openProfileModal()">Completar Cadastro Agora</button>
+                    </div>
+                `;
+            }
+            
+            html += `
+                <div class="portal-header">
+                    <h1>Olá, ${currentUser.name.split(' ')[0]}! 👋</h1>
+                    <p>${isComplete ? 'Vagas recomendadas para seu perfil' : 'Complete seu cadastro para começar'}</p>
+                </div>
+            `;
+            
+            if (isComplete) {
+                const matchingJobs = jobs.filter(j => {
+                    if (j.status !== 'active') return false;
+                    return j.functions.some(f => (currentUser.functions || []).includes(f));
+                });
+                
+                html += `
+                    <h2 style="font-family: 'Space Grotesk', sans-serif; color: var(--orbit-cyan); margin-bottom: 1.5rem;">
+                        Vagas Recomendadas (${matchingJobs.length})
+                    </h2>
+                    <div class="cards-grid">
+                        ${matchingJobs.length > 0 ? matchingJobs.map(job => {
+                            const applied = userApps.some(a => a.jobId === job.id);
+                            const manager = managers.find(m => m.id === job.managerId);
+                            
+                            return `
+                            <div class="card job-card ${applied ? 'applied' : ''}" style="border-color: ${applied ? 'var(--success)' : ''}">
+                                ${applied ? '<span class="badge badge-status" style="margin-bottom: 1rem; display: inline-block;">✓ Candidatura Enviada</span>' : ''}
+                                <div class="vacancy-match" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0,200,83,0.2); color: var(--success); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem;">
+                                    <span>⭐</span>
+                                    <span>Combina com seu perfil</span>
+                                </div>
+                                <h3 class="job-title">${job.title}</h3>
+                                <p style="color: var(--supernova-gold); font-weight: 600; margin-bottom: 1rem;">${job.payment}</p>
+                                <div class="job-meta">
+                                    <span>📍 ${job.location}</span>
+                                    <span>📅 ${formatDate(job.date)}</span>
+                                </div>
+                                <p style="color: var(--gray-3); margin-bottom: 1rem;">${job.description}</p>
+                                <div style="margin-bottom: 1rem;">
+                                    ${job.functions.map(f => `<span class="badge badge-function">${f}</span>`).join('')}
+                                </div>
+                                <div class="card-actions">
+                                    ${applied ? 
+                                        `<button class="btn btn-secondary" disabled>Já Candidatado</button>` :
+                                        `<button class="btn btn-success" onclick="applyToJob(${job.id})" style="flex: 1; justify-content: center;">Candidatar-se</button>`
+                                    }
+                                </div>
+                            </div>
+                            `;
+                        }).join('') : '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-state-icon">🔍</div><h3>Nenhuma vaga compatível no momento</h3></div>'}
+                    </div>
+                `;
+                
+                if (userApps.length > 0) {
+                    html += `
+                        <h2 style="font-family: 'Space Grotesk', sans-serif; color: var(--orbit-cyan); margin: 3rem 0 1.5rem;">
+                            Minhas Candidaturas
+                        </h2>
+                        <div class="cards-grid">
+                            ${userApps.map(app => {
+                                const job = jobs.find(j => j.id === app.jobId);
+                                if (!job) return '';
+                                const statusClass = app.status === 'approved' ? 'badge-status' : app.status === 'rejected' ? 'badge-status pending' : 'badge-status pending';
+                                const statusText = app.status === 'approved' ? '✓ Aprovado' : app.status === 'rejected' ? '✗ Não selecionado' : '⏳ Em análise';
+                                
+                                return `
+                                <div class="card" style="opacity: 0.9;">
+                                    <div style="padding: 1.5rem;">
+                                        <span class="badge ${statusClass}" style="margin-bottom: 1rem; display: inline-block;">${statusText}</span>
+                                        <h3 style="font-family: 'Space Grotesk', sans-serif; margin-bottom: 0.5rem;">${job.title}</h3>
+                                        <p style="color: var(--gray-3); font-size: 0.9rem;">Enviada em ${formatDate(app.appliedAt)}</p>
+                                        ${app.status === 'approved' ? `
+                                        <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,200,83,0.1); border-radius: 8px; border: 1px solid var(--success);">
+                                            <p style="color: var(--success); font-weight: 600;">🎉 Parabéns! Você foi selecionado!</p>
+                                            <p style="color: var(--gray-3); font-size: 0.85rem; margin-top: 0.5rem;">Entraremos em contato em breve.</p>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                }
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function applyToJob(jobId) {
+            const application = {
+                id: Date.now(),
+                jobId: jobId,
+                talentId: currentUser.id,
+                status: 'pending',
+                appliedAt: new Date().toISOString()
+            };
+            
+            applications.push(application);
+            
+            const job = jobs.find(j => j.id === jobId);
+            if (job) {
+                job.filledPositions++;
+                if (job.filledPositions >= job.maxPositions) job.status = 'filled';
+            }
+            
+            saveAllData();
+            showToast('Candidatura enviada!', 'success');
+            
+            setTimeout(() => {
+                showToast(`📧 Confirmação enviada para ${currentUser.email}`, 'success');
+            }, 2000);
+            
+            renderPortal();
+        }
+
+        // ==================== PROFILE MODAL ====================
+        function openProfileModal() {
+            currentStep = 1;
+            currentPhotos = { 
+                profile: currentUser.photos?.profile || null, 
+                jobs: currentUser.photos?.jobs || [] 
+            };
+            
+            // Pre-fill
+            document.getElementById('profName').value = currentUser.name || '';
+            document.getElementById('profEmail').value = currentUser.email || '';
+            document.getElementById('profPhone').value = currentUser.phone || '';
+            document.getElementById('profAge').value = currentUser.age || '';
+            document.getElementById('profAddress').value = currentUser.address || '';
+            document.getElementById('profCity').value = currentUser.city || '';
+            document.getElementById('profState').value = currentUser.state || '';
+            document.getElementById('profCNH').value = currentUser.cnh || 'Não possui';
+            document.getElementById('profExperience').value = currentUser.experience || '';
+            document.getElementById('profNotes').value = currentUser.notes || '';
+            
+            // Check boxes
+            document.querySelectorAll('#functionsGrid input').forEach(cb => {
+                cb.checked = (currentUser.functions || []).includes(cb.value);
+            });
+            document.querySelectorAll('#skillsGrid input').forEach(cb => {
+                cb.checked = (currentUser.skills || []).includes(cb.value);
+            });
+            
+            // Languages
+            const langContainer = document.getElementById('profLanguagesContainer');
+            langContainer.innerHTML = '';
+            if (currentUser.languages?.length > 0) {
+                currentUser.languages.forEach(lang => {
+                    addProfLanguage();
+                    const rows = langContainer.querySelectorAll('.language-row');
+                    const lastRow = rows[rows.length - 1];
+                    lastRow.querySelector('.prof-language').value = lang.language;
+                    lastRow.querySelector('.prof-language-level').value = lang.level;
+                });
+            } else {
+                addProfLanguage();
+            }
+            
+            updateProfilePreview();
+            updateProfJobsPreview();
+            updateStepUI();
+            
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        function nextStep() {
+            if (!validateStep()) return;
+            
+            if (currentStep < 4) {
+                currentStep++;
+                updateStepUI();
+            } else {
+                saveProfile();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepUI();
+            }
+        }
+
+        function validateStep() {
+            if (currentStep === 1) {
+                const required = ['profName', 'profAge', 'profPhone', 'profAddress', 'profState', 'profCity'];
+                for (let id of required) {
+                    if (!document.getElementById(id).value.trim()) {
+                        showToast('Preencha todos os campos obrigatórios', 'error');
+                        return false;
+                    }
+                }
+            } else if (currentStep === 2) {
+                const funcs = document.querySelectorAll('#functionsGrid input:checked');
+                if (funcs.length === 0) {
+                    showToast('Selecione pelo menos uma função', 'error');
+                    return false;
+                }
+                if (!document.getElementById('profExperience').value.trim()) {
+                    showToast('Descreva sua experiência', 'error');
+                    return false;
+                }
+            } else if (currentStep === 4) {
+                if (!currentPhotos.profile) {
+                    showToast('Adicione uma foto de perfil', 'error');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function updateStepUI() {
+            document.querySelectorAll('.profile-step').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.step').forEach(s => {
+                const stepNum = parseInt(s.dataset.step);
+                s.classList.remove('active', 'completed');
+                if (stepNum === currentStep) s.classList.add('active');
+                else if (stepNum < currentStep) s.classList.add('completed');
+            });
+            
+            const titles = ['Dados Pessoais', 'Dados Profissionais', 'Habilidades e Idiomas', 'Fotos e Finalização'];
+            document.getElementById('profileStepTitle').textContent = titles[currentStep - 1];
+            
+            document.getElementById('prevStepBtn').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+            document.getElementById('nextStepBtn').textContent = currentStep === 4 ? '✓ Finalizar Cadastro' : 'Próximo →';
+        }
+
+        function addProfLanguage() {
+            const container = document.getElementById('profLanguagesContainer');
+            const row = document.createElement('div');
+            row.className = 'language-row';
+            row.style.cssText = 'display: flex; gap: 0.5rem; align-items: center;';
+            row.innerHTML = `
+                <select class="prof-language" style="flex: 2;">
+                    <option value="">Selecione...</option>
+                    <option value="Inglês">Inglês</option>
+                    <option value="Espanhol">Espanhol</option>
+                    <option value="Francês">Francês</option>
+                    <option value="Alemão">Alemão</option>
+                    <option value="Italiano">Italiano</option>
+                    <option value="Mandarim">Mandarim</option>
+                </select>
+                <select class="prof-language-level" style="flex: 1;">
+                    <option value="Básico">Básico</option>
+                    <option value="Intermediário">Intermediário</option>
+                    <option value="Avançado">Avançado</option>
+                    <option value="Fluente">Fluente</option>
+                </select>
+                <button type="button" class="btn btn-secondary btn-small" onclick="this.parentElement.remove()">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function handleProfProfilePhoto(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentPhotos.profile = e.target.result;
+                    updateProfilePreview();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function updateProfilePreview() {
+            const preview = document.getElementById('profProfilePreview');
+            if (currentPhotos.profile) {
+                preview.innerHTML = `<img src="${currentPhotos.profile}" class="photo-preview-large">`;
+            }
+        }
+
+        function handleProfJobsPhotos(input) {
+            const files = Array.from(input.files);
+            files.forEach(file => {
+                if (currentPhotos.jobs.length >= 6) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentPhotos.jobs.push(e.target.result);
+                    updateProfJobsPreview();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateProfJobsPreview() {
+            const preview = document.getElementById('profJobsPreview');
+            preview.innerHTML = currentPhotos.jobs.map((photo, i) => `
+                <div class="uploaded-photo">
+                    <img src="${photo}">
+                    <button type="button" class="remove-photo" onclick="removeProfJobPhoto(${i})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function removeProfJobPhoto(index) {
+            currentPhotos.jobs.splice(index, 1);
+            updateProfJobsPreview();
+        }
+
+        function saveProfile() {
+            const functions = Array.from(document.querySelectorAll('#functionsGrid input:checked')).map(cb => cb.value);
+            const skills = Array.from(document.querySelectorAll('#skillsGrid input:checked')).map(cb => cb.value);
+            
+            const languages = [];
+            document.querySelectorAll('#profLanguagesContainer .language-row').forEach(row => {
+                const lang = row.querySelector('.prof-language').value;
+                const level = row.querySelector('.prof-language-level').value;
+                if (lang) languages.push({ language: lang, level: level });
+            });
+
+            const userIndex = talents.findIndex(t => t.id === currentUser.id);
+            if (userIndex === -1) return;
+
+            talents[userIndex] = {
+                ...talents[userIndex],
+                name: document.getElementById('profName').value,
+                age: parseInt(document.getElementById('profAge').value),
+                phone: document.getElementById('profPhone').value,
+                address: document.getElementById('profAddress').value,
+                city: document.getElementById('profCity').value,
+                state: document.getElementById('profState').value,
+                cnh: document.getElementById('profCNH').value,
+                functions: functions,
+                skills: skills,
+                languages: languages,
+                experience: document.getElementById('profExperience').value,
+                notes: document.getElementById('profNotes').value,
+                photos: { ...currentPhotos },
+                profileComplete: true,
+                status: 'active'
+            };
+
+            currentUser = { ...talents[userIndex], type: 'professional' };
+            localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
+            
+            saveAllData();
+            closeProfileModal();
+            showToast('Perfil completado!', 'success');
+            renderPortal();
+        }
+
+        // ==================== UTILITIES ====================
+        function getStatesOptions() {
+            const states = ['Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal', 'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul', 'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí', 'Rio de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia', 'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins'];
+            return states.map((s, i) => {
+                const uf = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'][i];
+                return `<option value="${uf}">${s}</option>`;
+            }).join('');
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+            
+            toast.className = `toast ${type} show`;
+            icon.textContent = type === 'success' ? '✓' : '✕';
+            msg.textContent = message;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function saveAllData() {
+            localStorage.setItem('univrq_talents', JSON.stringify(talents));
+            localStorage.setItem('univrq_jobs', JSON.stringify(jobs));
+            localStorage.setItem('univrq_managers', JSON.stringify(managers));
+            localStorage.setItem('univrq_applications', JSON.stringify(applications));
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
