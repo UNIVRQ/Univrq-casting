@@ -1556,20 +1556,74 @@
         }
 
         function handleAdminLogin(e) {
-            e.preventDefault();
-            const username = e.target.username.value;
-            const password = e.target.password.value;
+    e.preventDefault();
+    const username = e.target.username.value.trim();
+    const password = e.target.password.value;
 
-            if (username === 'admin' && password === 'univrq2026') {
-                currentUser = { name: 'Administrador', type: 'admin', email: 'admin@univrq.com' };
-                localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
-                closeAdminLogin();
-                showToast('Bem-vindo, Administrador!', 'success');
-                showAdminInterface();
-            } else {
-                showToast('Credenciais inválidas', 'error');
-            }
-        }
+    // Verifica se já existe uma senha de admin salva
+    const savedAdmin = JSON.parse(localStorage.getItem('univrq_admin')) || null;
+
+    // Se ainda não tem senha definida, mostra a seção de primeiro acesso
+    if (!savedAdmin) {
+        document.getElementById('adminLoginForm').classList.add('hidden');
+        document.getElementById('firstAccessSection').classList.remove('hidden');
+        showToast('Primeiro acesso! Defina uma senha segura.', 'warning');
+        return;
+    }
+
+    // Valida contra as credenciais salvas
+    if (username === savedAdmin.username && password === savedAdmin.password) {
+        currentUser = { name: 'Administrador', type: 'admin', email: 'admin@univrq.com' };
+        localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
+        closeAdminLogin();
+        showToast('Bem-vindo, Administrador!', 'success');
+        showAdminInterface();
+    } else {
+        showToast('Credenciais inválidas', 'error');
+        e.target.password.value = '';
+        e.target.password.focus();
+    }
+}
+
+function handleFirstAccess(e) {
+    e.preventDefault();
+    const newPassword = e.target.newPassword.value;
+    const confirmPassword = e.target.confirmNewPassword.value;
+
+    if (newPassword !== confirmPassword) {
+        showToast('As senhas não conferem', 'error');
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        showToast('A senha deve ter no mínimo 6 caracteres', 'error');
+        return;
+    }
+
+    // Salva as credenciais no localStorage
+    const adminCredentials = {
+        username: 'admin',
+        password: newPassword,
+        createdAt: new Date().toISOString()
+    };
+    localStorage.setItem('univrq_admin', JSON.stringify(adminCredentials));
+
+    // Faz login automaticamente
+    currentUser = { name: 'Administrador', type: 'admin', email: 'admin@univrq.com' };
+    localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
+    closeAdminLogin();
+    showToast('Senha definida com sucesso! Bem-vindo!', 'success');
+    showAdminInterface();
+}
+
+// Função para resetar a senha de admin (use com cuidado!)
+function resetAdminPassword() {
+    if (confirm('⚠️ ATENÇÃO: Isso vai apagar a senha atual do admin e permitir definir uma nova. Tem certeza?')) {
+        localStorage.removeItem('univrq_admin');
+        showToast('Senha resetada. Faça login novamente para definir uma nova senha.', 'success');
+        logout();
+    }
+}
 
         function logout() {
             currentUser = null;
