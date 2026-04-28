@@ -949,6 +949,7 @@
             animation: fadeIn 0.5s ease forwards;
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -1032,17 +1033,23 @@
                 <button class="modal-close" onclick="closeAdminLogin()">&times;</button>
             </div>
             <div class="modal-body">
+                <div id="adminLoginInfo" style="background: rgba(107,78,230,0.1); border: 1px solid var(--nebula-violet); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--gray-3);">
+                    <strong style="color: var(--orbit-cyan);">ℹ️ Primeiro Acesso:</strong> Se este é seu primeiro acesso, digite o usuário e senha desejados para criar sua conta administrativa.
+                </div>
                 <form onsubmit="handleAdminLogin(event)">
                     <div class="form-group">
                         <label>Usuário</label>
-                        <input type="text" name="username" required placeholder="Digite seu usuário">
+                        <input type="text" name="username" required placeholder="Digite seu usuário" id="adminUsername">
                     </div>
                     <div class="form-group">
                         <label>Senha</label>
-                        <input type="password" name="password" required placeholder="Digite sua senha">
+                        <input type="password" name="password" required placeholder="Digite sua senha" id="adminPassword">
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="adminLoginBtn">
                         Acessar Painel Admin
+                    </button>
+                    <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem; font-size: 0.85rem;" onclick="resetAdminPassword()" id="resetAdminBtn">
+                        🔄 Resetar Senha Admin
                     </button>
                 </form>
             </div>
@@ -1293,6 +1300,16 @@
         });
 
         function initializeData() {
+            // SEMPRE garante que existe um admin configurado
+            const savedAdmin = JSON.parse(localStorage.getItem('univrq_admin'));
+            if (!savedAdmin) {
+                localStorage.setItem('univrq_admin', JSON.stringify({
+                    username: 'admin',
+                    password: 'admin123',
+                    createdAt: new Date().toISOString()
+                }));
+            }
+
             if (talents.length === 0 && managers.length === 0) {
                 // Sample Managers
                 managers = [
@@ -1539,16 +1556,28 @@
             const username = e.target.username.value.trim();
             const password = e.target.password.value;
 
-            // Verifica se já existe uma senha de admin salva
             const savedAdmin = JSON.parse(localStorage.getItem('univrq_admin')) || null;
 
-            // Se não tem senha definida, bloqueia o acesso
+            // PRIMEIRO ACESSO: se não existe admin salvo, cria com as credenciais digitadas
             if (!savedAdmin) {
-                showToast('Acesso administrativo não configurado.', 'error');
+                if (password.length < 6) {
+                    showToast('A senha deve ter no mínimo 6 caracteres', 'error');
+                    return;
+                }
+                localStorage.setItem('univrq_admin', JSON.stringify({
+                    username: username,
+                    password: password,
+                    createdAt: new Date().toISOString()
+                }));
+                showToast('Primeiro acesso configurado! Bem-vindo!', 'success');
+                currentUser = { name: 'Administrador', type: 'admin', email: 'admin@univrq.com' };
+                localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
+                closeAdminLogin();
+                showAdminInterface();
                 return;
             }
 
-            // Valida contra as credenciais salvas
+            // LOGIN NORMAL: valida contra credenciais salvas
             if (username === savedAdmin.username && password === savedAdmin.password) {
                 currentUser = { name: 'Administrador', type: 'admin', email: 'admin@univrq.com' };
                 localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
@@ -1593,12 +1622,20 @@ function handleFirstAccess(e) {
     showAdminInterface();
 }
 
-// Função para resetar a senha de admin (use com cuidado!)
+// Resetar senha de admin - permite reconfigurar do zero
 function resetAdminPassword() {
-    if (confirm('⚠️ ATENÇÃO: Isso vai apagar a senha atual do admin e permitir definir uma nova. Tem certeza?')) {
+    if (confirm('⚠️ ATENÇÃO: Isso vai apagar a senha atual do admin.
+
+Você precisará fazer login novamente e criar novas credenciais.
+
+Tem certeza?')) {
         localStorage.removeItem('univrq_admin');
         showToast('Senha resetada. Faça login novamente para definir uma nova senha.', 'success');
-        logout();
+        // Atualiza a mensagem do modal
+        const infoDiv = document.getElementById('adminLoginInfo');
+        if (infoDiv) {
+            infoDiv.innerHTML = '<strong style="color: var(--orbit-cyan);">🆕 Novo Acesso:</strong> Defina seu novo usuário e senha de administrador.';
+        }
     }
 }
 
@@ -1661,9 +1698,14 @@ function resetAdminPassword() {
                 <div class="filters-section">
                     <div class="filters-header">
                         <h2 style="font-family: 'Space Grotesk', sans-serif; color: var(--orbit-cyan);">Banco de Talentos</h2>
-                        <button class="btn btn-success" onclick="openAdminTalentModal()">
-                            <span>+</span> Novo Profissional
-                        </button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-small" onclick="exportTalentsCSV()">
+                                📥 Exportar CSV
+                            </button>
+                            <button class="btn btn-success" onclick="openAdminTalentModal()">
+                                <span>+</span> Novo Profissional
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="filters-grid">
@@ -1698,9 +1740,14 @@ function resetAdminPassword() {
             container.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                     <h1 class="page-title">Vagas Ativas</h1>
-                    <button class="btn btn-success" onclick="openJobModal()">
-                        <span>+</span> Nova Vaga
-                    </button>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary btn-small" onclick="exportJobsCSV()">
+                            📥 Exportar CSV
+                        </button>
+                        <button class="btn btn-success" onclick="openJobModal()">
+                            <span>+</span> Nova Vaga
+                        </button>
+                    </div>
                 </div>
 
                 <div class="cards-grid" id="jobsList">
@@ -2258,7 +2305,101 @@ ${t.experience || 'Não informada'}
         }
 
         function editTalentAdmin(id) {
-            showToast('Função de edição em desenvolvimento', 'success');
+            const t = talents.find(x => x.id === id);
+            if (!t) return;
+
+            document.getElementById('adminModalTitle').textContent = 'Editar Profissional';
+            document.getElementById('adminModalBody').innerHTML = `
+                <form onsubmit="updateTalentAdmin(event, ${id})">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome *</label>
+                            <input type="text" name="name" value="${t.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" value="${t.email}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Idade *</label>
+                            <input type="number" name="age" min="18" max="80" value="${t.age || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone *</label>
+                            <input type="tel" name="phone" value="${t.phone || ''}" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Endereço</label>
+                            <input type="text" name="address" value="${t.address || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select name="state">
+                                <option value="">Selecione...</option>
+                                ${getStatesOptions().replace(`value="${t.state || ''}"`, `value="${t.state || ''}" selected`)}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cidade</label>
+                            <input type="text" name="city" value="${t.city || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>CNH</label>
+                            <select name="cnh">
+                                <option value="Não possui" ${t.cnh === 'Não possui' ? 'selected' : ''}>Não possui</option>
+                                <option value="A" ${t.cnh === 'A' ? 'selected' : ''}>A</option>
+                                <option value="B" ${t.cnh === 'B' ? 'selected' : ''}>B</option>
+                                <option value="C" ${t.cnh === 'C' ? 'selected' : ''}>C</option>
+                                <option value="D" ${t.cnh === 'D' ? 'selected' : ''}>D</option>
+                                <option value="E" ${t.cnh === 'E' ? 'selected' : ''}>E</option>
+                                <option value="AB" ${t.cnh === 'AB' ? 'selected' : ''}>A+B</option>
+                                <option value="AC" ${t.cnh === 'AC' ? 'selected' : ''}>A+C</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Funções</label>
+                            <div class="checkbox-group">
+                                ${['Promotor', 'Recepcionista', 'Produtor', 'Supervisor', 'Degustador', 'Modelo', 'Montador', 'Motorista', 'Manobrista', 'Coordenador'].map(f => `
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="functions" value="${f}" ${(t.functions || []).includes(f) ? 'checked' : ''}>
+                                        <span>${f}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            `;
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function updateTalentAdmin(e, id) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const idx = talents.findIndex(t => t.id === id);
+            if (idx === -1) return;
+
+            talents[idx] = {
+                ...talents[idx],
+                name: formData.get('name'),
+                email: formData.get('email'),
+                age: parseInt(formData.get('age')),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                city: formData.get('city'),
+                state: formData.get('state'),
+                cnh: formData.get('cnh'),
+                functions: Array.from(e.target.querySelectorAll('input[name="functions"]:checked')).map(cb => cb.value)
+            };
+
+            saveAllData();
+            closeAdminModal();
+            showToast('Profissional atualizado!', 'success');
+            showAdminTab('talents');
         }
 
         function deleteTalentAdmin(id) {
@@ -2290,7 +2431,97 @@ ${t.experience || 'Não informada'}
         }
 
         function editJob(id) {
-            showToast('Função de edição em desenvolvimento', 'success');
+            const job = jobs.find(j => j.id === id);
+            if (!job) return;
+
+            document.getElementById('adminModalTitle').textContent = 'Editar Vaga';
+            document.getElementById('adminModalBody').innerHTML = `
+                <form onsubmit="updateJob(event, ${id})">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Título *</label>
+                            <input type="text" name="title" value="${job.title}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cliente *</label>
+                            <input type="text" name="client" value="${job.client}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gestor *</label>
+                            <select name="managerId" required>
+                                <option value="">Selecione...</option>
+                                ${managers.map(m => `<option value="${m.id}" ${m.id === job.managerId ? 'selected' : ''}>${m.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Local *</label>
+                            <input type="text" name="location" value="${job.location}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data *</label>
+                            <input type="date" name="date" value="${job.date}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Horário *</label>
+                            <input type="text" name="time" value="${job.time}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Remuneração *</label>
+                            <input type="text" name="payment" value="${job.payment}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Vagas *</label>
+                            <input type="number" name="maxPositions" min="1" value="${job.maxPositions}" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Funções Necessárias *</label>
+                            <div class="checkbox-group">
+                                ${['Promotor', 'Recepcionista', 'Produtor', 'Supervisor', 'Degustador', 'Modelo', 'Montador', 'Motorista', 'Manobrista', 'Coordenador'].map(f => `
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="functions" value="${f}" ${job.functions.includes(f) ? 'checked' : ''}>
+                                        <span>${f}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Descrição *</label>
+                            <textarea name="description" rows="3" required>${job.description}</textarea>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            `;
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function updateJob(e, id) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const idx = jobs.findIndex(j => j.id === id);
+            if (idx === -1) return;
+
+            jobs[idx] = {
+                ...jobs[idx],
+                title: formData.get('title'),
+                client: formData.get('client'),
+                managerId: parseInt(formData.get('managerId')),
+                location: formData.get('location'),
+                date: formData.get('date'),
+                time: formData.get('time'),
+                payment: formData.get('payment'),
+                maxPositions: parseInt(formData.get('maxPositions')),
+                functions: Array.from(e.target.querySelectorAll('input[name="functions"]:checked')).map(cb => cb.value),
+                description: formData.get('description')
+            };
+
+            saveAllData();
+            closeAdminModal();
+            showToast('Vaga atualizada!', 'success');
+            showAdminTab('jobs');
         }
 
         function closeJob(id) {
@@ -2305,7 +2536,68 @@ ${t.experience || 'Não informada'}
         }
 
         function editManager(id) {
-            showToast('Função de edição em desenvolvimento', 'success');
+            const m = managers.find(x => x.id === id);
+            if (!m) return;
+
+            document.getElementById('adminModalTitle').textContent = 'Editar Gestor';
+            document.getElementById('adminModalBody').innerHTML = `
+                <form onsubmit="updateManager(event, ${id})">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome *</label>
+                            <input type="text" name="name" value="${m.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" value="${m.email}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone *</label>
+                            <input type="tel" name="phone" value="${m.phone}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cargo *</label>
+                            <input type="text" name="role" value="${m.role}" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Departamento *</label>
+                            <select name="department" required>
+                                <option value="">Selecione...</option>
+                                <option value="Operações" ${m.department === 'Operações' ? 'selected' : ''}>Operações</option>
+                                <option value="Recursos Humanos" ${m.department === 'Recursos Humanos' ? 'selected' : ''}>Recursos Humanos</option>
+                                <option value="Comercial" ${m.department === 'Comercial' ? 'selected' : ''}>Comercial</option>
+                                <option value="Marketing" ${m.department === 'Marketing' ? 'selected' : ''}>Marketing</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            `;
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function updateManager(e, id) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const idx = managers.findIndex(m => m.id === id);
+            if (idx === -1) return;
+
+            managers[idx] = {
+                ...managers[idx],
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                role: formData.get('role'),
+                department: formData.get('department')
+            };
+
+            saveAllData();
+            closeAdminModal();
+            showToast('Gestor atualizado!', 'success');
+            showAdminTab('managers');
         }
 
         function deleteManager(id) {
@@ -2681,11 +2973,21 @@ ${t.experience || 'Não informada'}
         }
 
         // ==================== UTILITIES ====================
-        function getStatesOptions() {
-            const states = ['Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal', 'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul', 'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí', 'Rio de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia', 'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins'];
-            return states.map((s, i) => {
-                const uf = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'][i];
-                return `<option value="${uf}">${s}</option>`;
+        function getStatesOptions(selectedUF) {
+            const states = [
+                {uf: 'AC', name: 'Acre'}, {uf: 'AL', name: 'Alagoas'}, {uf: 'AP', name: 'Amapá'},
+                {uf: 'AM', name: 'Amazonas'}, {uf: 'BA', name: 'Bahia'}, {uf: 'CE', name: 'Ceará'},
+                {uf: 'DF', name: 'Distrito Federal'}, {uf: 'ES', name: 'Espírito Santo'}, {uf: 'GO', name: 'Goiás'},
+                {uf: 'MA', name: 'Maranhão'}, {uf: 'MT', name: 'Mato Grosso'}, {uf: 'MS', name: 'Mato Grosso do Sul'},
+                {uf: 'MG', name: 'Minas Gerais'}, {uf: 'PA', name: 'Pará'}, {uf: 'PB', name: 'Paraíba'},
+                {uf: 'PR', name: 'Paraná'}, {uf: 'PE', name: 'Pernambuco'}, {uf: 'PI', name: 'Piauí'},
+                {uf: 'RJ', name: 'Rio de Janeiro'}, {uf: 'RN', name: 'Rio Grande do Norte'}, {uf: 'RS', name: 'Rio Grande do Sul'},
+                {uf: 'RO', name: 'Rondônia'}, {uf: 'RR', name: 'Roraima'}, {uf: 'SC', name: 'Santa Catarina'},
+                {uf: 'SP', name: 'São Paulo'}, {uf: 'SE', name: 'Sergipe'}, {uf: 'TO', name: 'Tocantins'}
+            ];
+            return states.map(s => {
+                const selected = selectedUF && s.uf === selectedUF ? ' selected' : '';
+                return `<option value="${s.uf}"${selected}>${s.name}</option>`;
             }).join('');
         }
 
@@ -2707,6 +3009,72 @@ ${t.experience || 'Não informada'}
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
+        }
+
+        function exportTalentsCSV() {
+            const professionals = talents.filter(t => t.type === 'professional');
+            if (professionals.length === 0) {
+                showToast('Nenhum profissional para exportar', 'error');
+                return;
+            }
+
+            const headers = ['Nome', 'Email', 'Telefone', 'Idade', 'Cidade', 'Estado', 'CNH', 'Funções', 'Habilidades', 'Idiomas', 'Status', 'Data Cadastro'];
+            const rows = professionals.map(t => [
+                t.name,
+                t.email,
+                t.phone,
+                t.age || '',
+                t.city || '',
+                t.state || '',
+                t.cnh || 'Não possui',
+                (t.functions || []).join('; '),
+                (t.skills || []).join('; '),
+                (t.languages || []).map(l => `${l.language}(${l.level})`).join('; '),
+                t.status || 'pending',
+                formatDate(t.createdAt)
+            ]);
+
+            const csv = [headers.join(','), ...rows.map(r => r.map(field => `"${(field || '').toString().replace(/"/g, '""')}"`).join(','))].join('\n');
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `univrq_talentos_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            showToast('CSV exportado!', 'success');
+        }
+
+        function exportJobsCSV() {
+            if (jobs.length === 0) {
+                showToast('Nenhuma vaga para exportar', 'error');
+                return;
+            }
+
+            const headers = ['Título', 'Cliente', 'Local', 'Data', 'Horário', 'Remuneração', 'Vagas', 'Preenchidas', 'Status', 'Gestor'];
+            const rows = jobs.map(j => {
+                const manager = managers.find(m => m.id === j.managerId);
+                return [
+                    j.title,
+                    j.client,
+                    j.location,
+                    j.date,
+                    j.time,
+                    j.payment,
+                    j.maxPositions,
+                    j.filledPositions,
+                    j.status,
+                    manager?.name || 'Sem gestor'
+                ];
+            });
+
+            const csv = [headers.join(','), ...rows.map(r => r.map(field => `"${(field || '').toString().replace(/"/g, '""')}"`).join(','))].join('\n');
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `univrq_vagas_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            showToast('CSV exportado!', 'success');
         }
 
         function saveAllData() {
