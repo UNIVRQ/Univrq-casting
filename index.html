@@ -1534,35 +1534,33 @@
             document.getElementById('adminLoginModal').classList.remove('active');
         }
 
-        function handleAdminLogin(e) {
-    e.preventDefault();
-    const username = e.target.username.value.trim();
-    const password = e.target.password.value;
+           function handleAdminLogin(e) {
+            e.preventDefault();
+            const username = e.target.username.value.trim();
+            const password = e.target.password.value;
 
-    // Verifica se já existe uma senha de admin salva
-    const savedAdmin = JSON.parse(localStorage.getItem('univrq_admin')) || null;
+            // Verifica se já existe uma senha de admin salva
+            const savedAdmin = JSON.parse(localStorage.getItem('univrq_admin')) || null;
 
-    // Se ainda não tem senha definida, mostra a seção de primeiro acesso
-    if (!savedAdmin) {
-        document.getElementById('adminLoginForm').classList.add('hidden');
-        document.getElementById('firstAccessSection').classList.remove('hidden');
-        showToast('Primeiro acesso! Defina uma senha segura.', 'warning');
-        return;
-    }
+            // Se não tem senha definida, bloqueia o acesso
+            if (!savedAdmin) {
+                showToast('Acesso administrativo não configurado.', 'error');
+                return;
+            }
 
-    // Valida contra as credenciais salvas
-    if (username === savedAdmin.username && password === savedAdmin.password) {
-        currentUser = { name: 'Administrador', type: 'admin', email: 'admin@univrq.com' };
-        localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
-        closeAdminLogin();
-        showToast('Bem-vindo, Administrador!', 'success');
-        showAdminInterface();
-    } else {
-        showToast('Credenciais inválidas', 'error');
-        e.target.password.value = '';
-        e.target.password.focus();
-    }
-}
+            // Valida contra as credenciais salvas
+            if (username === savedAdmin.username && password === savedAdmin.password) {
+                currentUser = { name: 'Administrador', type: 'admin', email: 'admin@univrq.com' };
+                localStorage.setItem('univrq_currentUser', JSON.stringify(currentUser));
+                closeAdminLogin();
+                showToast('Bem-vindo, Administrador!', 'success');
+                showAdminInterface();
+            } else {
+                showToast('Credenciais inválidas', 'error');
+                e.target.password.value = '';
+                e.target.password.focus();
+            }
+        }
 
 function handleFirstAccess(e) {
     e.preventDefault();
