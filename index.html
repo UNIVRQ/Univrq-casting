@@ -1032,19 +1032,40 @@
                 <button class="modal-close" onclick="closeAdminLogin()">&times;</button>
             </div>
             <div class="modal-body">
-                <form onsubmit="handleAdminLogin(event)">
+                <!-- Login normal -->
+                <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
                     <div class="form-group">
                         <label>Usuário</label>
-                        <input type="text" name="username" required value="admin">
+                        <input type="text" name="username" required placeholder="Digite seu usuário">
                     </div>
                     <div class="form-group">
                         <label>Senha</label>
-                        <input type="password" name="password" required value="univrq2026">
+                        <input type="password" name="password" required placeholder="Digite sua senha">
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                         Acessar Painel Admin
                     </button>
                 </form>
+
+                <!-- Primeiro acesso (só aparece se não tiver senha definida ainda) -->
+                <div id="firstAccessSection" class="hidden" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-2);">
+                    <p style="color: var(--gray-3); font-size: 0.9rem; margin-bottom: 1rem;">
+                        🔐 Primeiro acesso detectado. Defina uma senha de administrador para proteger seu painel.
+                    </p>
+                    <form onsubmit="handleFirstAccess(event)">
+                        <div class="form-group">
+                            <label>Nova Senha</label>
+                            <input type="password" name="newPassword" required placeholder="Mínimo 6 caracteres" minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirmar Nova Senha</label>
+                            <input type="password" name="confirmNewPassword" required placeholder="Repita a senha">
+                        </div>
+                        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">
+                            Definir Senha e Entrar
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
